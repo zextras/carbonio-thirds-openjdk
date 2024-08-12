@@ -1,0 +1,15 @@
+{
+  "name": "jdk",
+  "description": "This is the manifest to build jdk-related third-party packages",
+  "buildDir": "/tmp/",
+  "output": "artifacts",
+  "projects": [
+    {
+      "name": "openjdk",
+      "install": true
+    },
+    {
+      "name": "openjdk-cacerts"
+    }
+  ]
+}
