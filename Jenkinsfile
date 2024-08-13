@@ -91,7 +91,7 @@ pipeline {
                             {
                                 "pattern": "artifacts/*.deb",
                                 "target": "ubuntu-devel/pool/",
-                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.distribution=noble;deb.component=main;deb.architecture=amd64"
                             }
                         ]
                     }'''
@@ -149,7 +149,7 @@ pipeline {
                             {
                                 "pattern": "artifacts/*.deb",
                                 "target": "ubuntu-rc/pool/",
-                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.component=main;deb.architecture=amd64"
+                                "props": "deb.distribution=focal;deb.distribution=jammy;deb.distribution=noble;deb.component=main;deb.architecture=amd64"
                             }
                         ]
                     }'''

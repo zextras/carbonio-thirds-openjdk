@@ -89,7 +89,7 @@ postinst__apt() {
 
     mailboxd_truststore_password=$(su - zextras -c "zmlocalconfig -s -m nokey mailboxd_truststore_password")
     if [ -x /opt/zextras/bin/zmcertmgr ]; then
-      # Extract CA to /opt/zimbra/conf/ca
+      # Extract CA to /opt/zextras/conf/ca
       su - zextras -c '/opt/zextras/bin/zmcertmgr createca'
       # Update OpenJDK cacerts file with the CA stored in LDAP
       su - zextras -c '/opt/zextras/bin/zmcertmgr deployca --localonly'
@@ -149,7 +149,7 @@ postinst__yum() {
 
     mailboxd_truststore_password=$(su - zextras -c "zmlocalconfig -s -m nokey mailboxd_truststore_password")
     if [ -x /opt/zextras/bin/zmcertmgr ]; then
-      # Extract CA to /opt/zimbra/conf/ca
+      # Extract CA to /opt/zextras/conf/ca
       su - zextras -c '/opt/zextras/bin/zmcertmgr createca'
       # Update OpenJDK cacerts file with the CA stored in LDAP
       su - zextras -c '/opt/zextras/bin/zmcertmgr deployca --localonly'
