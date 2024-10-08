@@ -1,6 +1,6 @@
 pkgname="carbonio-openjdk-cacerts"
-pkgver="3.98"
-pkgrel="2"
+pkgver="3.105"
+pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
 arch=('x86_64')
 maintainer="Zextras <packages@zextras.com>"
@@ -12,9 +12,11 @@ section="utils"
 priority="optional"
 source=(
   "https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver/./_}_RTM/lib/ckfw/builtins/certdata.txt"
-  "import-cacerts"
+  "cacerts-upgrade.sh"
+  "import-cacerts.pl"
 )
-sha256sums=('4d96bd539f4719e9ace493757afbe4a23ee8579de1c97fbebc50bba3c12e8c1e'
+sha256sums=('36105b01631f9fc03b1eca779b44a30a1a5890b9bf8dc07ccb001a07301e01cf'
+  'af7b84938e9ed969fd8f7f85a26c764b16ea39c2016f75a9372f99a24bf0c784'
   '24babc85aeb1f5af9a7bf0af2bd4d299609039bda9862356064aaa92542d662f')
 
 package() {
@@ -24,8 +26,12 @@ package() {
 
   # Convert certdata.txt to PKCS12 der certificates compatible with
   # OpenJDK keystore
-  ./import-cacerts -f certdata.txt -o \
+  ./import-cacerts.pl -f certdata.txt -o \
     "${pkgdir}"/opt/zextras/common/etc/java
+
+  # Manually manage certs restoring
+  install -Dm755 cacerts-upgrade.sh \
+    "${pkgdir}/opt/zextras/bin/cacerts-upgrade"
 }
 
 preinst__apt() {
@@ -80,46 +86,6 @@ postinst__apt() {
 
   chown zextras:zextras /opt/zextras/common/etc/java/cacerts
   chmod 644 /opt/zextras/common/etc/java/cacerts
-
-  if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
-    rm -f /opt/zextras/common/etc/java/.upgrade
-
-    cacerts_save_dir="/opt/zextras/.saveconfig/carbonio-openjdk-cacerts"
-    cacerts_backup=${cacerts_save_dir}/cacerts-$(date +"%Y%m%d")
-
-    mailboxd_truststore_password=$(su - zextras -c "zmlocalconfig -s -m nokey mailboxd_truststore_password")
-    if [ -x /opt/zextras/bin/zmcertmgr ]; then
-      # Extract CA to /opt/zextras/conf/ca
-      su - zextras -c '/opt/zextras/bin/zmcertmgr createca'
-      # Update OpenJDK cacerts file with the CA stored in LDAP
-      su - zextras -c '/opt/zextras/bin/zmcertmgr deployca --localonly'
-
-      if [ "$mailboxd_truststore_password" != "changeit" ]; then
-        su - zextras -c "/opt/zextras/common/bin/keytool -storepasswd -keystore /opt/zextras/common/etc/java/cacerts -storepass changeit -new $mailboxd_truststore_password"
-      fi
-
-      if [ -d "$cacerts_save_dir" ]; then
-        chown zextras:zextras "$cacerts_backup"
-        chmod 644 "$cacerts_backup"
-
-        echo "Restoring certificates after upgrades from latest backup:"
-        echo "$cacerts_backup"
-        echo "please wait..."
-
-        for cert in $(/opt/zextras/common/bin/keytool -list -keystore "$cacerts_backup" -storepass changeit | grep trustedCertEntry | grep -Eo "^[^,]*"); do
-          /opt/zextras/common/bin/keytool \
-            -exportcert \
-            -keystore "$cacerts_backup" \
-            -storepass changeit \
-            -alias "$cert" \
-            -file "$cacerts_save_dir/$cert" 2>/dev/null
-
-          chown zextras:zextras "$cacerts_save_dir/$cert"
-          su - zextras -c "/opt/zextras/bin/zmcertmgr addcacert $cacerts_save_dir/$cert" >/dev/null
-        done
-      fi
-    fi
-  fi
 }
 
 postinst__yum() {
@@ -140,44 +106,4 @@ postinst__yum() {
 
   chown zextras:zextras /opt/zextras/common/etc/java/cacerts
   chmod 644 /opt/zextras/common/etc/java/cacerts
-
-  if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
-    rm -f /opt/zextras/common/etc/java/.upgrade
-
-    cacerts_save_dir="/opt/zextras/.saveconfig/carbonio-openjdk-cacerts"
-    cacerts_backup=${cacerts_save_dir}/cacerts-$(date +"%Y%m%d")
-
-    mailboxd_truststore_password=$(su - zextras -c "zmlocalconfig -s -m nokey mailboxd_truststore_password")
-    if [ -x /opt/zextras/bin/zmcertmgr ]; then
-      # Extract CA to /opt/zextras/conf/ca
-      su - zextras -c '/opt/zextras/bin/zmcertmgr createca'
-      # Update OpenJDK cacerts file with the CA stored in LDAP
-      su - zextras -c '/opt/zextras/bin/zmcertmgr deployca --localonly'
-
-      if [ "$mailboxd_truststore_password" != "changeit" ]; then
-        su - zextras -c "/opt/zextras/common/bin/keytool -storepasswd -keystore /opt/zextras/common/etc/java/cacerts -storepass changeit -new $mailboxd_truststore_password"
-      fi
-
-      if [ -d "$cacerts_save_dir" ]; then
-        chown zextras:zextras "$cacerts_backup"
-        chmod 644 "$cacerts_backup"
-
-        echo "Restoring certificates after upgrades from latest backup:"
-        echo "$cacerts_backup"
-        echo "please wait..."
-
-        for cert in $(/opt/zextras/common/bin/keytool -list -keystore "$cacerts_backup" -storepass changeit | grep trustedCertEntry | grep -Eo "^[^,]*"); do
-          /opt/zextras/common/bin/keytool \
-            -exportcert \
-            -keystore "$cacerts_backup" \
-            -storepass changeit \
-            -alias "$cert" \
-            -file "$cacerts_save_dir/$cert" 2>/dev/null
-
-          chown zextras:zextras "$cacerts_save_dir/$cert"
-          su - zextras -c "/opt/zextras/bin/zmcertmgr addcacert $cacerts_save_dir/$cert" >/dev/null
-        done
-      fi
-    fi
-  fi
 }
