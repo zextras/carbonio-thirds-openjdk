@@ -1,6 +1,6 @@
 pkgname="carbonio-openjdk-cacerts"
-pkgver="3.98"
-pkgrel="2"
+pkgver="3.105"
+pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
 arch=('x86_64')
 maintainer="Zextras <packages@zextras.com>"
@@ -12,9 +12,9 @@ section="utils"
 priority="optional"
 source=(
   "https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver/./_}_RTM/lib/ckfw/builtins/certdata.txt"
-  "import-cacerts"
+  "import-cacerts.pl"
 )
-sha256sums=('4d96bd539f4719e9ace493757afbe4a23ee8579de1c97fbebc50bba3c12e8c1e'
+sha256sums=('36105b01631f9fc03b1eca779b44a30a1a5890b9bf8dc07ccb001a07301e01cf'
   '24babc85aeb1f5af9a7bf0af2bd4d299609039bda9862356064aaa92542d662f')
 
 package() {
@@ -24,7 +24,7 @@ package() {
 
   # Convert certdata.txt to PKCS12 der certificates compatible with
   # OpenJDK keystore
-  ./import-cacerts -f certdata.txt -o \
+  ./import-cacerts.pl -f certdata.txt -o \
     "${pkgdir}"/opt/zextras/common/etc/java
 }
 
@@ -107,15 +107,18 @@ postinst__apt() {
         echo "please wait..."
 
         for cert in $(/opt/zextras/common/bin/keytool -list -keystore "$cacerts_backup" -storepass changeit | grep trustedCertEntry | grep -Eo "^[^,]*"); do
-          /opt/zextras/common/bin/keytool \
-            -exportcert \
-            -keystore "$cacerts_backup" \
-            -storepass changeit \
-            -alias "$cert" \
-            -file "$cacerts_save_dir/$cert" 2>/dev/null
+          # Check if the certificate starts with my_ca or zcs-
+          if [[ "$cert" == my_ca* || "$cert" == zcs-* ]]; then
+            /opt/zextras/common/bin/keytool \
+              -exportcert \
+              -keystore "$cacerts_backup" \
+              -storepass changeit \
+              -alias "$cert" \
+              -file "$cacerts_save_dir/$cert" 2>/dev/null
 
-          chown zextras:zextras "$cacerts_save_dir/$cert"
-          su - zextras -c "/opt/zextras/bin/zmcertmgr addcacert $cacerts_save_dir/$cert" >/dev/null
+            chown zextras:zextras "$cacerts_save_dir/$cert"
+            su - zextras -c "/opt/zextras/bin/zmcertmgr addcacert $cacerts_save_dir/$cert" >/dev/null
+          fi
         done
       fi
     fi
@@ -167,15 +170,18 @@ postinst__yum() {
         echo "please wait..."
 
         for cert in $(/opt/zextras/common/bin/keytool -list -keystore "$cacerts_backup" -storepass changeit | grep trustedCertEntry | grep -Eo "^[^,]*"); do
-          /opt/zextras/common/bin/keytool \
-            -exportcert \
-            -keystore "$cacerts_backup" \
-            -storepass changeit \
-            -alias "$cert" \
-            -file "$cacerts_save_dir/$cert" 2>/dev/null
+          # Check if the certificate starts with my_ca or zcs-
+          if [[ "$cert" == my_ca* || "$cert" == zcs-* ]]; then
+            /opt/zextras/common/bin/keytool \
+              -exportcert \
+              -keystore "$cacerts_backup" \
+              -storepass changeit \
+              -alias "$cert" \
+              -file "$cacerts_save_dir/$cert" 2>/dev/null
 
-          chown zextras:zextras "$cacerts_save_dir/$cert"
-          su - zextras -c "/opt/zextras/bin/zmcertmgr addcacert $cacerts_save_dir/$cert" >/dev/null
+            chown zextras:zextras "$cacerts_save_dir/$cert"
+            su - zextras -c "/opt/zextras/bin/zmcertmgr addcacert $cacerts_save_dir/$cert" >/dev/null
+          fi
         done
       fi
     fi
