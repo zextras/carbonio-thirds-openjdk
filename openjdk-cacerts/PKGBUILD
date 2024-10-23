@@ -30,9 +30,9 @@ package() {
     "${pkgdir}"/opt/zextras/common/etc/java
 	
   install -Dm 644 "certdata.txt" \
-    "/opt/zextras/common/etc/java/"  
+    "${pkgdir}/opt/zextras/common/etc/java/"  
   install -Dm 644 "ca-bundle.crt" \
-    "/opt/zextras/common/etc/java/"	
+    "${pkgdir}/opt/zextras/common/etc/java/"	
 	
 }
 
