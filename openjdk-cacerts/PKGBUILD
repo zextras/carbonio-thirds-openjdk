@@ -38,14 +38,14 @@ package() {
 
 preinst__apt() {
   if [ "$1" = "upgrade" ]; then
-	rm -f "${cacerts_save_dir}/*"
     if [ "$2" != "$3" ]; then
       cacerts_save_dir="/opt/zextras/.saveconfig/carbonio-openjdk-cacerts"
       if [ ! -d "${cacerts_save_dir}" ]; then
         mkdir -p "${cacerts_save_dir}"
+	  else
+	    rm -f ${cacerts_save_dir}/*	  
       fi
       cacerts_backup=${cacerts_save_dir}/cacerts-$(date +"%Y%m%d")
-
       cp /opt/zextras/common/etc/java/cacerts "$cacerts_backup"
 
       # Marker file to indicate in postinstall that an update was done
@@ -59,8 +59,9 @@ preinst__yum() {
     cacerts_save_dir="/opt/zextras/.saveconfig/carbonio-openjdk-cacerts"
     if [ ! -d "${cacerts_save_dir}" ]; then
 		mkdir -p "${cacerts_save_dir}"
+	else
+		rm -f ${cacerts_save_dir}/*	
     fi
-	rm -f "${cacerts_save_dir}/*"
     cacerts_backup=${cacerts_save_dir}/cacerts-$(date +"%Y%m%d")
 
     cp /opt/zextras/common/etc/java/cacerts "$cacerts_backup"
