@@ -30,9 +30,9 @@ package() {
     "${pkgdir}"/opt/zextras/common/etc/java
 	
   install -Dm 644 "certdata.txt" \
-    "/opt/zextras/data/tmp/"  
+    "/var/tmp/"  
   install -Dm 644 "ca-bundle.crt" \
-    "/opt/zextras/data/tmp/"	
+    "/var/tmp/"	
 	
 }
 
@@ -128,7 +128,7 @@ postinst__apt() {
 			-file "$cacerts_save_dir/$cert" 2>/dev/null
 		
 			#Check if it is self signed or commerciale certificate using ca-bundle.crt created with https://curl.se/docs/mk-ca-bundle.html
-			isValid=$(openssl x509 -inform der -in "$cacerts_save_dir/$cert" -outform pem | openssl verify -CAfile /opt/zextras/data/tmp/ca-bundle.crt 2>&1)
+			isValid=$(openssl x509 -inform der -in "$cacerts_save_dir/$cert" -outform pem | openssl verify -CAfile /var/tmp/ca-bundle.crt 2>&1)
 		
 			if [ "$isValid" == "stdin: OK" ]; then
 				echo "Skip commercial cert $cert" 
@@ -137,7 +137,7 @@ postinst__apt() {
 				org=$(echo $caData | sed 's/= /=/g' | cut -f 4 -d '=');
 				#Sometime openssl doe not recognize all commercial certificates using verify so this check in the certdata.txt
 				#Maybe thi check is not perfect but usually it removes lot of wrong imports
-				if grep -q "$org" /opt/zextras/data/tmp/certdata.txt; then
+				if grep -q "$org" /var/tmp/certdata.txt; then
 					echo "Skip unrecognized commercial CA $org $cert"
 				else
 					echo "Importing self signed CA cert $cert"
@@ -205,7 +205,7 @@ postinst__yum() {
 			-file "$cacerts_save_dir/$cert" 2>/dev/null
 		
 			#Check if it is self signed or commerciale certificate using ca-bundle.crt created with https://curl.se/docs/mk-ca-bundle.html
-			isValid=$(openssl x509 -inform der -in "$cacerts_save_dir/$cert" -outform pem | openssl verify -CAfile /opt/zextras/data/tmp/ca-bundle.crt 2>&1)
+			isValid=$(openssl x509 -inform der -in "$cacerts_save_dir/$cert" -outform pem | openssl verify -CAfile /var/tmp/ca-bundle.crt 2>&1)
 		
 			if [ "$isValid" == "stdin: OK" ]; then
 				echo "Skip commercial cert $cert" 
@@ -214,7 +214,7 @@ postinst__yum() {
 				org=$(echo $caData | sed 's/= /=/g' | cut -f 4 -d '=');
 				#Sometime openssl doe not recognize all commercial certificates using verify so this check in the certdata.txt
 				#Maybe thi check is not perfect but usually it removes lot of wrong imports
-				if grep -q "$org" /opt/zextras/data/tmp/certdata.txt; then
+				if grep -q "$org" /var/tmp/certdata.txt; then
 					echo "Skip unrecognized commercial CA $org $cert"
 				else
 					echo "Importing self signed CA cert $cert"
