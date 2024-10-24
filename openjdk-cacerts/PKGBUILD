@@ -33,7 +33,6 @@ package() {
     "${pkgdir}/opt/zextras/common/etc/java/"  
   install -Dm 644 "ca-bundle.crt" \
     "${pkgdir}/opt/zextras/common/etc/java/"	
-	
 }
 
 preinst__apt() {
@@ -42,8 +41,8 @@ preinst__apt() {
       cacerts_save_dir="/opt/zextras/.saveconfig/carbonio-openjdk-cacerts"
       if [ ! -d "${cacerts_save_dir}" ]; then
         mkdir -p "${cacerts_save_dir}"
-	  else
-	    rm -f ${cacerts_save_dir}/*	  
+	    else
+	      rm -f ${cacerts_save_dir}/*	  
       fi
       cacerts_backup=${cacerts_save_dir}/cacerts-$(date +"%Y%m%d")
       cp /opt/zextras/common/etc/java/cacerts "$cacerts_backup"
@@ -58,9 +57,9 @@ preinst__yum() {
   if [ "$1" == "2" ]; then
     cacerts_save_dir="/opt/zextras/.saveconfig/carbonio-openjdk-cacerts"
     if [ ! -d "${cacerts_save_dir}" ]; then
-		mkdir -p "${cacerts_save_dir}"
-	else
-		rm -f ${cacerts_save_dir}/*	
+		  mkdir -p "${cacerts_save_dir}"
+	  else
+		  rm -f ${cacerts_save_dir}/*	
     fi
     cacerts_backup=${cacerts_save_dir}/cacerts-$(date +"%Y%m%d")
 
