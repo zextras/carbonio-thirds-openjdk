@@ -30,22 +30,21 @@ package() {
     "${pkgdir}"/opt/zextras/common/etc/java
 	
   install -Dm 644 "certdata.txt" \
-    "${pkgdir}/opt/zextras/common/etc/java/"  
+    "${pkgdir}/opt/zextras/common/etc/java/"
   install -Dm 644 "ca-bundle.crt" \
     "${pkgdir}/opt/zextras/common/etc/java/"
 }
 
 preinst__apt() {
   if [ "$1" = "upgrade" ]; then
-	  rm -f "${cacerts_save_dir}/*"
     if [ "$2" != "$3" ]; then
       cacerts_save_dir="/opt/zextras/.saveconfig/carbonio-openjdk-cacerts"
       if [ ! -d "${cacerts_save_dir}" ]; then
         mkdir -p "${cacerts_save_dir}"
+	    else
+	      rm -f ${cacerts_save_dir}/*	  
       fi
-	    rm -f "${cacerts_save_dir}/*"
       cacerts_backup=${cacerts_save_dir}/cacerts-$(date +"%Y%m%d")
-
       cp /opt/zextras/common/etc/java/cacerts "$cacerts_backup"
 
       # Marker file to indicate in postinstall that an update was done
@@ -59,8 +58,9 @@ preinst__yum() {
     cacerts_save_dir="/opt/zextras/.saveconfig/carbonio-openjdk-cacerts"
     if [ ! -d "${cacerts_save_dir}" ]; then
 		  mkdir -p "${cacerts_save_dir}"
+	  else
+		  rm -f ${cacerts_save_dir}/*
     fi
-	  rm -f "${cacerts_save_dir}/*"
     cacerts_backup=${cacerts_save_dir}/cacerts-$(date +"%Y%m%d")
 
     cp /opt/zextras/common/etc/java/cacerts "$cacerts_backup"
@@ -129,7 +129,7 @@ postinst__apt() {
 			isValid=$(openssl x509 -inform der -in "$cacerts_save_dir/$cert" -outform pem | openssl verify -CAfile /opt/zextras/common/etc/java/ca-bundle.crt 2>&1)
 		
 			if [ "$isValid" = "stdin: OK" ]; then
-				echo "Skip commercial cert $cert" 
+				echo "Skip commercial cert $cert"
 			else
 				caData=$(echo "$isValid" | grep -v 'error')
 				org=$(echo $caData | sed 's/= /=/g' | cut -f 4 -d '=');
@@ -206,7 +206,7 @@ postinst__yum() {
 			isValid=$(openssl x509 -inform der -in "$cacerts_save_dir/$cert" -outform pem | openssl verify -CAfile /opt/zextras/common/etc/java/ca-bundle.crt 2>&1)
 		
 			if [ "$isValid" == "stdin: OK" ]; then
-				echo "Skip commercial cert $cert" 
+				echo "Skip commercial cert $cert"
 			else
 				caData=$(echo "$isValid" | grep -v 'error')
 				org=$(echo $caData | sed 's/= /=/g' | cut -f 4 -d '=');
