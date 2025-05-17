@@ -6,7 +6,7 @@ pipeline {
     }
     agent {
         node {
-            label 'base-agent-v2'
+            label 'base'
         }
     }
     environment {
@@ -14,11 +14,6 @@ pipeline {
     }
     stages {
         stage('Checkout & Stash') {
-            agent {
-                node {
-                    label 'base-agent-v2'
-                }
-            }
             steps {
                 checkout scm
                 stash includes: '**', name: 'project'
@@ -39,13 +34,15 @@ pipeline {
         stage('Ubuntu') {
             agent {
                 node {
-                    label 'yap-agent-ubuntu-20.04-v2'
+                    label 'yap-ubuntu-20-v1'
                 }
             }
             steps {
-                unstash 'project'
-                sh 'sudo yap build ubuntu . -s'
-                stash includes: 'artifacts/*.deb', name: 'artifacts-ubuntu'
+                container('yap') {
+                    unstash 'project'
+                    sh 'sudo yap build ubuntu . -s'
+                    stash includes: 'artifacts/*.deb', name: 'artifacts-ubuntu'
+                }
             }
             post {
                 always {
@@ -56,17 +53,19 @@ pipeline {
         stage('RHEL') {
             agent {
                 node {
-                    label 'yap-agent-rocky-8-v2'
+                    label 'yap-rocky-8-v1'
                 }
             }
             steps {
-                unstash 'project'
-                sh 'sudo yap build rocky . -s'
-                stash includes: 'artifacts/x86_64/*.rpm', name: 'artifacts-rocky'
+                container('yap') {
+                    unstash 'project'
+                    sh 'sudo yap build rocky . -s'
+                    stash includes: 'artifacts/*.rpm', name: 'artifacts-rocky'
+                }
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'artifacts/x86_64/*.rpm', fingerprint: true
+                    archiveArtifacts artifacts: 'artifacts/*.rpm', fingerprint: true
                 }
             }
         }
@@ -99,24 +98,24 @@ pipeline {
                     uploadSpecRhel = '''{
                         "files": [
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-openjdk)-(*).x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-openjdk)-(*).x86_64.rpm",
                                 "target": "centos8-devel/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras",
                                 "exclusions": ["*openjdk-cacerts*.rpm"]
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-openjdk-cacerts)-(*).x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-openjdk-cacerts)-(*).x86_64.rpm",
                                 "target": "centos8-devel/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-openjdk)-(*).x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-openjdk)-(*).x86_64.rpm",
                                 "target": "rhel9-devel/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras",
                                 "exclusions": ["*openjdk-cacerts*.rpm"]
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-openjdk-cacerts)-(*).x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-openjdk-cacerts)-(*).x86_64.rpm",
                                 "target": "rhel9-devel/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             }
@@ -176,13 +175,13 @@ pipeline {
                     uploadSpec= '''{
                         "files": [
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-openjdk)-(*).x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-openjdk)-(*).x86_64.rpm",
                                 "target": "centos8-rc/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras",
                                 "exclusions": ["*openjdk-cacerts*.rpm"]
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-openjdk-cacerts)-(*).x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-openjdk-cacerts)-(*).x86_64.rpm",
                                 "target": "centos8-rc/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             }
@@ -211,13 +210,13 @@ pipeline {
                     uploadSpec= '''{
                         "files": [
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-openjdk)-(*).x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-openjdk)-(*).x86_64.rpm",
                                 "target": "rhel9-rc/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras",
                                 "exclusions": ["*openjdk-cacerts*.rpm"]
                             },
                             {
-                                "pattern": "artifacts/x86_64/(carbonio-openjdk-cacerts)-(*).x86_64.rpm",
+                                "pattern": "artifacts/(carbonio-openjdk-cacerts)-(*).x86_64.rpm",
                                 "target": "rhel9-rc/zextras/{1}/{1}-{2}.x86_64.rpm",
                                 "props": "rpm.metadata.arch=x86_64;rpm.metadata.vendor=zextras"
                             }
