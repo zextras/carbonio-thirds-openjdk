@@ -13,12 +13,14 @@ section="utils"
 priority="optional"
 source=(
   "https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver/./_}_RTM/lib/ckfw/builtins/certdata.txt"
-  "import-cacerts.pl"
   "ca-bundle.crt"
+  "import-cacerts.pl"
+  "systemd-tmpfile.conf"
 )
 sha256sums=('b6cb65afb95d1a4f328f3fc05bc2050ae38ff4e6c95e5854de84dcc74025790d'
+  '7e3333d066c0e10348ce78b6ab9ecb44cad72b1bd6c664e1f9f20fec71ff6cf0'
   '24babc85aeb1f5af9a7bf0af2bd4d299609039bda9862356064aaa92542d662f'
-  '7e3333d066c0e10348ce78b6ab9ecb44cad72b1bd6c664e1f9f20fec71ff6cf0')
+  '643cdff7c74d4cbf268a0fa6d5f4e3b774f73edc52bf151d43d603fd9e5410a2')
 
 package() {
   mkdir -p "${pkgdir}/opt/zextras/common/etc/java"
@@ -34,6 +36,10 @@ package() {
     "${pkgdir}/opt/zextras/common/etc/java/"
   install -Dm 644 "ca-bundle.crt" \
     "${pkgdir}/opt/zextras/common/etc/java/"
+
+  # systemd tmpfiles.d
+  install -Dm644 "${srcdir}/systemd-tmpfile.conf" \
+    "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
 }
 
 preinst__apt() {
