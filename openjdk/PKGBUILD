@@ -1,5 +1,5 @@
 pkgname="carbonio-openjdk"
-pkgver="17.0.12"
+pkgver="17.0.15"
 pkgrel="1"
 pkgdesc="OpenJDK Java 17 development kit"
 arch=('x86_64')
@@ -8,9 +8,9 @@ url="https:/zextras.com"
 section="utils"
 priority="optional"
 source=(
-  "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${pkgver}%2B7/OpenJDK17U-jdk_x64_linux_hotspot_${pkgver}_7.tar.gz"
+  "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${pkgver}%2B6/OpenJDK17U-jdk_x64_linux_hotspot_${pkgver}_6.tar.gz"
 )
-sha256sums=('9d4dd339bf7e6a9dcba8347661603b74c61ab2a5083ae67bf76da6285da8a778')
+sha256sums=('9616877c733c9249328ea9bd83a5c8c30e0f9a7af180cac8ffda9034161c2df2')
 
 package() {
   cd "${srcdir}"

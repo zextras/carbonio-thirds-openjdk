@@ -40,7 +40,7 @@ pipeline {
             steps {
                 container('yap') {
                     unstash 'project'
-                    sh 'sudo yap build ubuntu . -s'
+                    sh 'sudo yap build ubuntu .'
                     stash includes: 'artifacts/*.deb', name: 'artifacts-ubuntu'
                 }
             }
@@ -59,7 +59,7 @@ pipeline {
             steps {
                 container('yap') {
                     unstash 'project'
-                    sh 'sudo yap build rocky . -s'
+                    sh 'sudo yap build rocky .'
                     stash includes: 'artifacts/*.rpm', name: 'artifacts-rocky'
                 }
             }
