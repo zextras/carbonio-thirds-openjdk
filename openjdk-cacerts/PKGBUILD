@@ -1,6 +1,6 @@
 pkgname="carbonio-openjdk-cacerts"
-pkgver="3.105"
-pkgrel="3"
+pkgver="3.113"
+pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
 arch=('x86_64')
 maintainer="Zextras <packages@zextras.com>"
@@ -16,7 +16,7 @@ source=(
   "import-cacerts.pl"
   "ca-bundle.crt"
 )
-sha256sums=('36105b01631f9fc03b1eca779b44a30a1a5890b9bf8dc07ccb001a07301e01cf'
+sha256sums=('b6cb65afb95d1a4f328f3fc05bc2050ae38ff4e6c95e5854de84dcc74025790d'
   '24babc85aeb1f5af9a7bf0af2bd4d299609039bda9862356064aaa92542d662f'
   '7e3333d066c0e10348ce78b6ab9ecb44cad72b1bd6c664e1f9f20fec71ff6cf0')
 
