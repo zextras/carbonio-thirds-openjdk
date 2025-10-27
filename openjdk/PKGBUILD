@@ -1,16 +1,16 @@
 pkgname="carbonio-openjdk"
-pkgver="17.0.15"
+pkgver="21.0.9"
 pkgrel="1"
-pkgdesc="OpenJDK Java 17 development kit"
+pkgdesc="OpenJDK Java 21 development kit"
 arch=('x86_64')
 maintainer="Zextras <packages@zextras.com>"
 url="https:/zextras.com"
 section="utils"
 priority="optional"
 source=(
-  "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-${pkgver}%2B6/OpenJDK17U-jdk_x64_linux_hotspot_${pkgver}_6.tar.gz"
+  "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B10/OpenJDK21U-jdk_x64_linux_hotspot_${pkgver}_10.tar.gz"
 )
-sha256sums=('9616877c733c9249328ea9bd83a5c8c30e0f9a7af180cac8ffda9034161c2df2')
+sha256sums=('810d3773df7e0d6c4394e4e244b264c8b30e0b05a0acf542d065fd78a6b65c2f')
 
 package() {
   cd "${srcdir}"
