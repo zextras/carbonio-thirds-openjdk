@@ -1,5 +1,5 @@
 pkgname="carbonio-openjdk-cacerts"
-pkgver="3.113"
+pkgver="3.113" # renovate: datasource=repology depName=nss
 pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
 arch=('x86_64')
