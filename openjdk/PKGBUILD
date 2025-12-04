@@ -1,5 +1,5 @@
 pkgname="carbonio-openjdk"
-pkgver="21.0.9"
+pkgver="21.0.9" # renovate: datasource=github-releases depName=adoptium/temurin21-binaries
 pkgrel="1"
 pkgdesc="OpenJDK Java 21 development kit"
 arch=('x86_64')
