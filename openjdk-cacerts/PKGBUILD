@@ -98,6 +98,9 @@ postinst__apt() {
   chown zextras:zextras /opt/zextras/common/etc/java/cacerts
   chmod 644 /opt/zextras/common/etc/java/cacerts
 
+  # Apply tmpfiles.d configuration
+  systemd-tmpfiles --create
+
   if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
     rm -f /opt/zextras/common/etc/java/.upgrade
 
@@ -175,6 +178,9 @@ postinst__yum() {
 
   chown zextras:zextras /opt/zextras/common/etc/java/cacerts
   chmod 644 /opt/zextras/common/etc/java/cacerts
+
+  # Apply tmpfiles.d configuration
+  systemd-tmpfiles --create
 
   if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
     rm -f /opt/zextras/common/etc/java/.upgrade
