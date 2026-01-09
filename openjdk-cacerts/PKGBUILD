@@ -99,7 +99,7 @@ postinst__apt() {
   chmod 644 /opt/zextras/common/etc/java/cacerts
 
   # Apply tmpfiles.d configuration
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-openjdk-cacerts.conf
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-openjdk-cacerts.conf >/dev/null 2>&1 || :
 
   if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
     rm -f /opt/zextras/common/etc/java/.upgrade
@@ -180,7 +180,7 @@ postinst__yum() {
   chmod 644 /opt/zextras/common/etc/java/cacerts
 
   # Apply tmpfiles.d configuration
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-openjdk-cacerts.conf
+  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-openjdk-cacerts.conf >/dev/null 2>&1 || :
 
   if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
     rm -f /opt/zextras/common/etc/java/.upgrade
