@@ -78,27 +78,8 @@ preinst__yum() {
 }
 
 postinst__apt() {
-  if [ "$1" = "configure" ]; then
-    # creating zextras group if it isn't already there
-    if ! getent group zextras >/dev/null; then
-      addgroup --system --force-badname --quiet zextras
-    fi
-
-    # creating zextras user if it isn't already there
-    if ! getent passwd zextras >/dev/null; then
-      adduser --system --force-badname --quiet \
-        --ingroup zextras \
-        --home /opt/zextras \
-        --shell /bin/bash \
-        zextras
-      usermod -c "zextras user" zextras
-    fi
-  fi
-
-  chown zextras:zextras /opt/zextras/common/etc/java/cacerts
-  chmod 644 /opt/zextras/common/etc/java/cacerts
-
-  # Apply tmpfiles.d configuration
+  # zextras user/group provided by carbonio-core via sysusers.d
+  # cacerts ownership/permissions handled by tmpfiles.d
   systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-openjdk-cacerts.conf >/dev/null 2>&1 || :
 
   if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
@@ -161,25 +142,8 @@ postinst__apt() {
 }
 
 postinst__yum() {
-  # creating zextras group if it isn't already there
-  if ! getent group zextras >/dev/null; then
-    groupadd --system zextras >/dev/null
-  fi
-
-  # creating zextras user if it isn't already there
-  if ! getent passwd zextras >/dev/null; then
-    useradd --system \
-      -g zextras \
-      -d /opt/zextras \
-      --shell /bin/bash \
-      zextras >/dev/null
-    usermod -c "zextras user" zextras
-  fi
-
-  chown zextras:zextras /opt/zextras/common/etc/java/cacerts
-  chmod 644 /opt/zextras/common/etc/java/cacerts
-
-  # Apply tmpfiles.d configuration
+  # zextras user/group provided by carbonio-core via sysusers.d
+  # cacerts ownership/permissions handled by tmpfiles.d
   systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-openjdk-cacerts.conf >/dev/null 2>&1 || :
 
   if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
