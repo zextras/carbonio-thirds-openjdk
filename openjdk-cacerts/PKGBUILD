@@ -20,7 +20,7 @@ source=(
 sha256sums=('b6cb65afb95d1a4f328f3fc05bc2050ae38ff4e6c95e5854de84dcc74025790d'
   '7e3333d066c0e10348ce78b6ab9ecb44cad72b1bd6c664e1f9f20fec71ff6cf0'
   '24babc85aeb1f5af9a7bf0af2bd4d299609039bda9862356064aaa92542d662f'
-  '643cdff7c74d4cbf268a0fa6d5f4e3b774f73edc52bf151d43d603fd9e5410a2')
+  '5f803f1977c929a3c6ac3c5cd639ed4c7ba829d78e5754ea8425e4c1a9c28bc0')
 
 package() {
   mkdir -p "${pkgdir}/opt/zextras/common/etc/java"
