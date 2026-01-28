@@ -1,4 +1,9 @@
 #!/usr/bin/perl
+
+# SPDX-FileCopyrightText: 2024 Zextras <https://www.zextras.com>
+#
+# SPDX-License-Identifier: AGPL-3.0-only
+
 use strict;
 use warnings;
 use Getopt::Long;
