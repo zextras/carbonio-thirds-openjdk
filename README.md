@@ -96,8 +96,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute to t
 ## License
 
 The build scripts, patches, and configuration files in this repository are licensed under the GNU Affero General Public License v3.0 - see the [LICENSE.md](LICENSE.md) file for details.
-
-This repository does not contain the source code of the third-party projects it packages. The PKGBUILD scripts download upstream sources at build time from their original locations. Each upstream project retains its own license, and the resulting built packages are distributed under those original licenses. Please refer to each component's upstream documentation for specific licensing information:
-
-- **OpenJDK/Temurin**: GPL-2.0 with Classpath Exception by Eclipse Foundation (Adoptium)
-- **NSS CA Certificates**: MPL-2.0 by Mozilla Foundation
