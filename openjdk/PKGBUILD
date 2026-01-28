@@ -7,10 +7,13 @@ maintainer="Zextras <packages@zextras.com>"
 url="https:/zextras.com"
 section="utils"
 priority="optional"
+license=("GPL-2.0-with-classpath-exception")
 source=(
   "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B10/OpenJDK21U-jdk_x64_linux_hotspot_${pkgver}_10.tar.gz"
 )
-sha256sums=('810d3773df7e0d6c4394e4e244b264c8b30e0b05a0acf542d065fd78a6b65c2f')
+sha256sums=(
+  '810d3773df7e0d6c4394e4e244b264c8b30e0b05a0acf542d065fd78a6b65c2f'
+)
 
 package() {
   cd "${srcdir}"
