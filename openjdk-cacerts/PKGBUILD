@@ -17,7 +17,7 @@ section="utils"
 license=("MPL-2.0")
 priority="optional"
 source=(
-  "https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver/./_}_RTM/lib/ckfw/builtins/certdata.txt"
+  "certdata-${pkgver}.txt::https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver/./_}_RTM/lib/ckfw/builtins/certdata.txt"
   "ca-bundle.crt"
   "import-cacerts.pl"
   "systemd-tmpfile.conf"
@@ -26,7 +26,7 @@ sha256sums=(
   'b6cb65afb95d1a4f328f3fc05bc2050ae38ff4e6c95e5854de84dcc74025790d'
   '7e3333d066c0e10348ce78b6ab9ecb44cad72b1bd6c664e1f9f20fec71ff6cf0'
   'ef6dcacb1c0ae92a23c53fe036fbaf236726e0659f3e4bac2ed2a26bdc0d1d74'
-  'd27d62d96f984f7e898c920df28485702a9fb0b51fe22cef4e1474416aaaced2'
+  '54cc93665d015de13c044695fd6698aad41b370b9266fa54944c610071057cab'
 )
 
 package() {
@@ -36,12 +36,12 @@ package() {
 
   # Convert certdata.txt to PKCS12 der certificates compatible with
   # OpenJDK keystore
-  ./import-cacerts.pl -f certdata.txt -o \
+  ./import-cacerts.pl -f "certdata-${pkgver}.txt" -o \
     "${pkgdir}"/opt/zextras/common/etc/java
 
-  install -Dm 644 "certdata.txt" \
+  install -Dm644 "certdata-${pkgver}.txt" \
     "${pkgdir}/opt/zextras/common/etc/java/"
-  install -Dm 644 "ca-bundle.crt" \
+  install -Dm644 "ca-bundle.crt" \
     "${pkgdir}/opt/zextras/common/etc/java/"
 
   # systemd tmpfiles.d
