@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 library(
-    identifier: 'jenkins-lib-common@1.1.2',
+    identifier: 'jenkins-lib-common@1.3.5',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -68,9 +68,6 @@ pipeline {
                     packages: yapHelper.getPackageNames(),
                     ubuntuSinglePkg: true,
                     rockySinglePkg: true,
-                    exclusionMap: [
-                        'carbonio-openjdk': ['*openjdk-cacerts*.rpm']
-                    ]
                 )
             }
         }
