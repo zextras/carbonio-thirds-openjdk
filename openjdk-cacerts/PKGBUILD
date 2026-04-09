@@ -3,13 +3,14 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-openjdk-cacerts"
-pkgver="3.121" # renovate: datasource=repology depName=nss
+pkgver="3.122" # renovate: datasource=repology depName=nss
 pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
 arch=('x86_64')
 maintainer="Zextras <packages@zextras.com>"
 url="https:/zextras.com"
 depends=(
+  "carbonio-core"
   "carbonio-openjdk"
 )
 makedepends=("perl")
