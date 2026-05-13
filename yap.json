@@ -5,8 +5,7 @@
   "output": "artifacts",
   "projects": [
     {
-      "name": "openjdk",
-      "install": true
+      "name": "openjdk"
     },
     {
       "name": "openjdk-cacerts"

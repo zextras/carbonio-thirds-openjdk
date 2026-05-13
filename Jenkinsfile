@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 library(
-    identifier: 'jenkins-lib-common@1.7.5',
+    identifier: 'jenkins-lib-common@v2.6.0',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -52,7 +52,13 @@ pipeline {
             steps {
                 echo 'Building deb/rpm packages'
                 buildStage(
-                    addCarbonioRepos: true,
+                    buildFlags: ' -ds ',
+                )
+                buildStage(
+                    architecture: 'aarch64',
+                    buildFlags: ' -ds --only carbonio-openjdk',
+                    distros: ['ubuntu-jammy'],
+                    parallelBuilds: false,
                 )
             }
         }
@@ -64,6 +70,11 @@ pipeline {
             }
             steps {
                 uploadStage(
+                    packages: yapHelper.getPackageNames(),
+                )
+                uploadStage(
+                    architecture: 'aarch64',
+                    distros: ['ubuntu-jammy'],
                     packages: yapHelper.getPackageNames(),
                 )
             }

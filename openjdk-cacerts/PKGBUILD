@@ -6,27 +6,33 @@ pkgname="carbonio-openjdk-cacerts"
 pkgver="3.122" # renovate: datasource=repology depName=nss
 pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
-arch=('x86_64')
+arch=('any')
 maintainer="Zextras <packages@zextras.com>"
 url="https:/zextras.com"
 depends=(
   "carbonio-core"
   "carbonio-openjdk"
 )
-makedepends=("perl")
 section="utils"
 license=("MPL-2.0")
 priority="optional"
+
+# mkcacerts: standalone tool that builds the cacerts truststore from
+# certdata.txt without needing a JDK at build time. Produced output is
+# byte-equivalent in trust content to the previous keytool-based pipeline.
+# Build host is assumed to be linux/x86_64.
+_mkcacerts_ver="0.1.0"
+
 source=(
   "certdata-${pkgver}.txt::https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver/./_}_RTM/lib/ckfw/builtins/certdata.txt"
   "ca-bundle.crt"
-  "import-cacerts.pl"
+  "mkcacerts-${_mkcacerts_ver}.tar.gz::https://github.com/M0Rf30/mkcacerts/releases/download/v${_mkcacerts_ver}/mkcacerts_${_mkcacerts_ver}_linux_x86_64.tar.gz"
   "systemd-tmpfile.conf"
 )
 sha256sums=(
   '3b98d4e3ff57a326d9587c33633039c8c3a9cf0b55f7ca581d7598ff329eb1f3'
   '7e3333d066c0e10348ce78b6ab9ecb44cad72b1bd6c664e1f9f20fec71ff6cf0'
-  'ef6dcacb1c0ae92a23c53fe036fbaf236726e0659f3e4bac2ed2a26bdc0d1d74'
+  '44b6825d54d9d50aeb2812b4c6557884ed624d5c93dc8e1e35d13e3178f7cbd3'
   '54cc93665d015de13c044695fd6698aad41b370b9266fa54944c610071057cab'
 )
 
@@ -35,10 +41,13 @@ package() {
 
   cd "${srcdir}"
 
-  # Convert certdata.txt to PKCS12 der certificates compatible with
-  # OpenJDK keystore
-  ./import-cacerts.pl -f "certdata-${pkgver}.txt" -o \
-    "${pkgdir}"/opt/zextras/common/etc/java
+  # Build the PKCS12 cacerts truststore directly from certdata.txt.
+  # mkcacerts emits a JDK-compatible PKCS12 keystore with the Oracle
+  # TrustedKeyUsage attribute set on each entry, so JDK 9+ loads them as
+  # trustedCertEntry. No keytool/JDK is needed at build time.
+  chmod +x ./mkcacerts
+  ./mkcacerts -f "certdata-${pkgver}.txt" \
+    -o "${pkgdir}/opt/zextras/common/etc/java"
 
   install -Dm644 "certdata-${pkgver}.txt" \
     "${pkgdir}/opt/zextras/common/etc/java/"

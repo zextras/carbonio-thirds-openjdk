@@ -7,16 +7,23 @@ pkgver="21.0.10" # renovate: datasource=github-releases depName=adoptium/temurin
 pkgrel="1"
 _pkgrel=7
 pkgdesc="OpenJDK Java 21 development kit"
-arch=('x86_64')
+arch=('aarch64' 'x86_64')
 maintainer="Zextras <packages@zextras.com>"
 url="https:/zextras.com"
 section="utils"
 priority="optional"
+options=('!strip')
 license=("GPL-2.0-with-classpath-exception")
-source=(
+source_aarch64=(
+  "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK21U-jdk_aarch64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
+)
+source_x86_64=(
   "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK21U-jdk_x64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
 )
-sha256sums=(
+sha256sums_aarch64=(
+  '357fee29fb0d5c079f6730db98b28942df13a6eed426f6c61cd4ad703ab27b9a'
+)
+sha256sums_x86_64=(
   'ea3b9bd464d6dd253e9a7accf59f7ccd2a36e4aa69640b7251e3370caef896a4'
 )
 
