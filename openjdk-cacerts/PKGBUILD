@@ -21,18 +21,16 @@ priority="optional"
 # certdata.txt without needing a JDK at build time. Produced output is
 # byte-equivalent in trust content to the previous keytool-based pipeline.
 # Build host is assumed to be linux/x86_64.
-_mkcacerts_ver="0.1.0"
+_mkcacerts_ver="0.2.0"
 
 source=(
   "certdata-${pkgver}.txt::https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver/./_}_RTM/lib/ckfw/builtins/certdata.txt"
-  "ca-bundle.crt"
   "mkcacerts-${_mkcacerts_ver}.tar.gz::https://github.com/M0Rf30/mkcacerts/releases/download/v${_mkcacerts_ver}/mkcacerts_${_mkcacerts_ver}_linux_x86_64.tar.gz"
   "systemd-tmpfile.conf"
 )
 sha256sums=(
   '3b98d4e3ff57a326d9587c33633039c8c3a9cf0b55f7ca581d7598ff329eb1f3'
-  '7e3333d066c0e10348ce78b6ab9ecb44cad72b1bd6c664e1f9f20fec71ff6cf0'
-  '44b6825d54d9d50aeb2812b4c6557884ed624d5c93dc8e1e35d13e3178f7cbd3'
+  '9cf77af0b0b373e5e4c6651856158641eba53d248c60db9a5d3e4530c474b6b4'
   '54cc93665d015de13c044695fd6698aad41b370b9266fa54944c610071057cab'
 )
 
@@ -46,12 +44,13 @@ package() {
   # TrustedKeyUsage attribute set on each entry, so JDK 9+ loads them as
   # trustedCertEntry. No keytool/JDK is needed at build time.
   chmod +x ./mkcacerts
+  # mkcacerts also emits ca-bundle.crt (PEM) from the same trusted set,
+  # so the bundle always tracks the packaged certdata.txt/NSS version.
   ./mkcacerts -f "certdata-${pkgver}.txt" \
-    -o "${pkgdir}/opt/zextras/common/etc/java"
+    -o "${pkgdir}/opt/zextras/common/etc/java" \
+    -bundle "${pkgdir}/opt/zextras/common/etc/java/ca-bundle.crt"
 
   install -Dm644 "certdata-${pkgver}.txt" \
-    "${pkgdir}/opt/zextras/common/etc/java/"
-  install -Dm644 "ca-bundle.crt" \
     "${pkgdir}/opt/zextras/common/etc/java/"
 
   # systemd tmpfiles.d
