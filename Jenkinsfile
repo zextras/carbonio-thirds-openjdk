@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: AGPL-3.0-only
 
 library(
-    identifier: 'jenkins-lib-common@v2.6.0',
+    identifier: 'jenkins-lib-common@v4.1.4',
     retriever: modernSCM([
         $class: 'GitSCMSource',
         credentialsId: 'jenkins-integration-with-github-account',
@@ -69,13 +69,10 @@ pipeline {
                 jfrog 'jfrog-cli'
             }
             steps {
-                uploadStage(
-                    packages: yapHelper.getPackageNames(),
-                )
+                uploadStage()
                 uploadStage(
                     architecture: 'aarch64',
                     distros: ['ubuntu-jammy'],
-                    packages: yapHelper.getPackageNames(),
                 )
             }
         }
