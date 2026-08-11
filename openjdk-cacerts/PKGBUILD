@@ -50,6 +50,10 @@ package() {
     -o "${pkgdir}/opt/zextras/common/etc/java" \
     -bundle "${pkgdir}/opt/zextras/common/etc/java/ca-bundle.crt"
 
+  # pin mode: mkcacerts inherits the build umask
+  chmod 644 "${pkgdir}/opt/zextras/common/etc/java/cacerts" \
+    "${pkgdir}/opt/zextras/common/etc/java/ca-bundle.crt"
+
   install -Dm644 "certdata-${pkgver}.txt" \
     "${pkgdir}/opt/zextras/common/etc/java/"
 
@@ -93,10 +97,28 @@ preinst__yum() {
   fi
 }
 
+_fix_cacerts_ownership() {
+  # carbonio-core and this package Depend on each other, so dpkg may configure
+  # us before core creates the zextras user via sysusers.d (CO-4047).
+  if ! getent passwd zextras >/dev/null 2>&1; then
+    systemd-sysusers /usr/lib/sysusers.d/carbonio-core.conf >/dev/null 2>&1 || :
+  fi
+
+  if ! getent passwd zextras >/dev/null 2>&1; then
+    echo "WARNING: zextras user missing, cannot set ownership of ${_cacerts}." >&2
+    echo "WARNING: run 'chown zextras:zextras ${_cacerts}' after bootstrap." >&2
+    return 0
+  fi
+
+  # not left to tmpfiles.d alone: it skips items whose path crosses an
+  # ownership boundary ("unsafe path transition")
+  chown zextras:zextras "${_cacerts}" || return 1
+  chmod 644 "${_cacerts}" || return 1
+}
+
 postinst__apt() {
-  # zextras user/group provided by carbonio-core via sysusers.d
-  # cacerts ownership/permissions handled by tmpfiles.d
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-openjdk-cacerts.conf >/dev/null 2>&1 || :
+  _cacerts="/opt/zextras/common/etc/java/cacerts"
+  _fix_cacerts_ownership || echo "WARNING: failed to set ownership of ${_cacerts}." >&2
 
   if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
     rm -f /opt/zextras/common/etc/java/.upgrade
@@ -158,9 +180,8 @@ postinst__apt() {
 }
 
 postinst__yum() {
-  # zextras user/group provided by carbonio-core via sysusers.d
-  # cacerts ownership/permissions handled by tmpfiles.d
-  systemd-tmpfiles --create /usr/lib/tmpfiles.d/carbonio-openjdk-cacerts.conf >/dev/null 2>&1 || :
+  _cacerts="/opt/zextras/common/etc/java/cacerts"
+  _fix_cacerts_ownership || echo "WARNING: failed to set ownership of ${_cacerts}." >&2
 
   if [ -f /opt/zextras/common/etc/java/.upgrade ]; then
     rm -f /opt/zextras/common/etc/java/.upgrade
