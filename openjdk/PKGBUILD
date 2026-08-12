@@ -3,9 +3,9 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-openjdk"
-pkgver="21.0.10" # renovate: datasource=github-releases depName=adoptium/temurin21-binaries
+pkgver="21.0.12" # renovate: datasource=github-releases depName=adoptium/temurin21-binaries
 pkgrel="1"
-_pkgrel=7
+_pkgrel=8
 pkgdesc="OpenJDK Java 21 development kit"
 arch=('aarch64' 'x86_64')
 maintainer="Zextras <packages@zextras.com>"
@@ -21,10 +21,10 @@ source_x86_64=(
   "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK21U-jdk_x64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
 )
 sha256sums_aarch64=(
-  '357fee29fb0d5c079f6730db98b28942df13a6eed426f6c61cd4ad703ab27b9a'
+  'eba38e871b02d407897bfe017ea35352dfc1420ef6d2112425b0c67325ca509d'
 )
 sha256sums_x86_64=(
-  'ea3b9bd464d6dd253e9a7accf59f7ccd2a36e4aa69640b7251e3370caef896a4'
+  'e4446ff06a276155697597cc0f1b15da004ff083f4964a35271ecee567177370'
 )
 
 package() {
