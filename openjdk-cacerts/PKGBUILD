@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-openjdk-cacerts"
-pkgver="3.122" # renovate: datasource=repology depName=nss
+pkgver="3.126" # renovate: datasource=repology depName=nss
 pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
 arch=('any')
@@ -29,7 +29,7 @@ source=(
   "systemd-tmpfile.conf"
 )
 sha256sums=(
-  '3b98d4e3ff57a326d9587c33633039c8c3a9cf0b55f7ca581d7598ff329eb1f3'
+  '81b7f2576333a2e360e673f912d7b0b7a765d836c731003e348a46cac5d37198'
   '9cf77af0b0b373e5e4c6651856158641eba53d248c60db9a5d3e4530c474b6b4'
   '54cc93665d015de13c044695fd6698aad41b370b9266fa54944c610071057cab'
 )
