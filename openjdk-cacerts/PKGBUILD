@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-openjdk-cacerts"
-pkgver="3.126" # renovate: datasource=repology depName=nss
+pkgver="3.126" # renovate: datasource=repology depName=arch/nss
 pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
 arch=('any')
