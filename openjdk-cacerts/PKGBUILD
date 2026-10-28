@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-openjdk-cacerts"
-pkgver="3.126" # renovate: datasource=repology depName=nss
+pkgver="3.126" # renovate: datasource=repology depName=arch/nss
 pkgrel="1"
 pkgdesc="CA Certs keystore for OpenJDK"
 arch=('any')
@@ -24,7 +24,7 @@ priority="optional"
 _mkcacerts_ver="0.2.0"
 
 source=(
-  "certdata-${pkgver}.txt::https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver/./_}_RTM/lib/ckfw/builtins/certdata.txt"
+  "certdata-${pkgver}.txt::https://raw.githubusercontent.com/nss-dev/nss/NSS_${pkgver//./_}_RTM/lib/ckfw/builtins/certdata.txt"
   "mkcacerts-${_mkcacerts_ver}.tar.gz::https://github.com/M0Rf30/mkcacerts/releases/download/v${_mkcacerts_ver}/mkcacerts_${_mkcacerts_ver}_linux_x86_64.tar.gz"
   "systemd-tmpfile.conf"
 )
