@@ -3,10 +3,10 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-openjdk"
-pkgver="21.0.12" # renovate: datasource=github-releases depName=adoptium/temurin21-binaries
+pkgver="25.0.5" # renovate: datasource=github-releases depName=adoptium/temurin25-binaries
 pkgrel="1"
 _pkgrel=8
-pkgdesc="OpenJDK Java 21 development kit"
+pkgdesc="OpenJDK Java 25 development kit"
 arch=('aarch64' 'x86_64')
 maintainer="Zextras <packages@zextras.com>"
 url="https:/zextras.com"
@@ -15,16 +15,16 @@ priority="optional"
 options=('!strip')
 license=("GPL-2.0-with-classpath-exception")
 source_aarch64=(
-  "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK21U-jdk_aarch64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
+  "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK25U-jdk_aarch64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
 )
 source_x86_64=(
-  "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK21U-jdk_x64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
+  "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK25U-jdk_x64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
 )
 sha256sums_aarch64=(
-  'eba38e871b02d407897bfe017ea35352dfc1420ef6d2112425b0c67325ca509d'
+  'bb5b2ded252f21c6090cf780b0a408ad0d83bbb557e702955643557f13231880'
 )
 sha256sums_x86_64=(
-  'e4446ff06a276155697597cc0f1b15da004ff083f4964a35271ecee567177370'
+  '68982529869257d0ee6b824ec5aa270ff8b118bb438670da0b97ebdab178d7fb'
 )
 
 package() {
