@@ -1,10 +1,10 @@
 # Carbonio OpenJDK
 
-This repository contains build configurations for OpenJDK 21 and related certificate packages for the Carbonio platform. It packages the Adoptium Temurin JDK distribution along with curated CA certificates for secure communication.
+This repository contains build configurations for OpenJDK 25 and related certificate packages for the Carbonio platform. It packages the Adoptium Temurin JDK distribution along with curated CA certificates for secure communication.
 
 This repository builds two packages:
 
-- **`carbonio-openjdk`** - OpenJDK 21 Development Kit based on Adoptium Temurin binaries
+- **`carbonio-openjdk`** - OpenJDK 25 Development Kit based on Adoptium Temurin binaries
 - **`carbonio-openjdk-cacerts`** - Curated CA certificate keystore for OpenJDK with automatic certificate management
 
 The packages are designed to integrate seamlessly with the Carbonio platform, providing Java runtime environment and secure certificate management for Carbonio services.
@@ -71,9 +71,9 @@ yum install carbonio-openjdk carbonio-openjdk-cacerts
 
 ### carbonio-openjdk
 
-Provides OpenJDK 21 Java Development Kit with the following features:
+Provides OpenJDK 25 Java Development Kit with the following features:
 
-- Based on Adoptium Temurin 21 binaries
+- Based on Adoptium Temurin 25 binaries
 - Installed to `/opt/zextras/common/lib/jvm/java`
 - Symlinked executables in `/opt/zextras/common/bin`
 - Configured to use Carbonio certificate store
