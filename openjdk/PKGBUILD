@@ -20,11 +20,14 @@ license=("GPL-2.0-with-classpath-exception")
 # choices (bundled freetype/zlib/libjpeg/giflib/libpng/lcms/harfbuzz, dtrace,
 # external debug symbols, no PCH) Temurin uses, so the resulting image has
 # the same content as the Temurin tarball we used to repackage.
+# gcc/g++ are pinned to the (amd64) build host: on cross builds yap would
+# otherwise install them as :arm64, leaving no host compiler for the
+# build-JDK that configure builds first.
 makedepends__apt=(
   "autoconf"
   "file"
-  "g++"
-  "gcc"
+  "g++:amd64"
+  "gcc:amd64"
   "libasound2-dev"
   "libcups2-dev"
   "libfontconfig1-dev"
