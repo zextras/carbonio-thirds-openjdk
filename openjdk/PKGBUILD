@@ -3,9 +3,11 @@
 # SPDX-License-Identifier: AGPL-3.0-only
 
 pkgname="carbonio-openjdk"
-pkgver="21.0.12" # renovate: datasource=github-releases depName=adoptium/temurin21-binaries
+pkgver="21.0.13.1" # renovate: datasource=github-tags depName=adoptium/jdk21u
 pkgrel="1"
-_pkgrel=8
+_pkgrel=2
+_bootver="21.0.13"
+_bootrel=9
 pkgdesc="OpenJDK Java 21 development kit"
 arch=('aarch64' 'x86_64')
 maintainer="Zextras <packages@zextras.com>"
@@ -14,24 +16,147 @@ section="utils"
 priority="optional"
 options=('!strip')
 license=("GPL-2.0-with-classpath-exception")
-source_aarch64=(
-  "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK21U-jdk_aarch64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
+# Built from the same Adoptium source tree and with the same configure
+# choices (bundled freetype/zlib/libjpeg/giflib/libpng/lcms/harfbuzz, dtrace,
+# external debug symbols, no PCH) Temurin uses, so the resulting image has
+# the same content as the Temurin tarball we used to repackage.
+makedepends__apt=(
+  "autoconf"
+  "file"
+  "g++"
+  "gcc"
+  "libasound2-dev"
+  "libcups2-dev"
+  "libfontconfig1-dev"
+  "libx11-dev"
+  "libxext-dev"
+  "libxrandr-dev"
+  "libxrender-dev"
+  "libxt-dev"
+  "libxtst-dev"
+  "make"
+  "systemtap-sdt-dev"
+  "unzip"
+  "zip"
 )
-source_x86_64=(
-  "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${pkgver}%2B${_pkgrel}/OpenJDK21U-jdk_x64_linux_hotspot_${pkgver}_${_pkgrel}.tar.gz"
+makedepends__yum=(
+  "alsa-lib-devel"
+  "autoconf"
+  "cups-devel"
+  "diffutils"
+  "file"
+  "fontconfig-devel"
+  "gcc"
+  "gcc-c++"
+  "libX11-devel"
+  "libXext-devel"
+  "libXrandr-devel"
+  "libXrender-devel"
+  "libXt-devel"
+  "libXtst-devel"
+  "make"
+  "systemtap-sdt-devel"
+  "unzip"
+  "which"
+  "zip"
 )
-sha256sums_aarch64=(
-  'eba38e871b02d407897bfe017ea35352dfc1420ef6d2112425b0c67325ca509d'
+source=(
+  "jdk21u-${pkgver}-${_pkgrel}.tar.gz::https://github.com/adoptium/jdk21u/archive/refs/tags/jdk-${pkgver}%2B${_pkgrel}_adopt.tar.gz"
+  "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${_bootver}%2B${_bootrel}/OpenJDK21U-jdk_x64_linux_hotspot_${_bootver}_${_bootrel}.tar.gz"
+  "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-${_bootver}%2B${_bootrel}/OpenJDK21U-jdk_aarch64_linux_hotspot_${_bootver}_${_bootrel}.tar.gz"
 )
-sha256sums_x86_64=(
-  'e4446ff06a276155697597cc0f1b15da004ff083f4964a35271ecee567177370'
+# Boot JDKs unpack to the same directory name; build() extracts the one
+# matching the build host.
+noextract=(
+  "OpenJDK21U-jdk_x64_linux_hotspot_${_bootver}_${_bootrel}.tar.gz"
+  "OpenJDK21U-jdk_aarch64_linux_hotspot_${_bootver}_${_bootrel}.tar.gz"
+)
+sha256sums=(
+  '5f7e6a647d91bb46662eeffd1bd13a3acda4dc8af4eb298752ae99e03e9eb918'
+  'd7f5d5cf865a2902b70ff549b97586a7d3f234e016f041ab447ea740c7d66d1c'
+  'e3522e707fc7dbe2a72c30746b1e7068301a0213ecd213d4491f35a14eb55578'
 )
 
-package() {
+build() {
   cd "${srcdir}"
+
+  case "$(uname -m)" in
+    x86_64) _bootarch="x64" ;;
+    aarch64) _bootarch="aarch64" ;;
+    *)
+      echo "unsupported build host $(uname -m)" >&2
+      return 1
+      ;;
+  esac
+  rm -rf bootjdk
+  mkdir bootjdk
+  tar -xzf "OpenJDK21U-jdk_${_bootarch}_linux_hotspot_${_bootver}_${_bootrel}.tar.gz" \
+    -C bootjdk --strip-components=1
+
+  # OpenJDK configure rejects/overrides toolchain flags from the environment;
+  # extra flags must go through --with-extra-*.
+  unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS
+
+  # configure sizes the job count from host cores/RAM, not the container's
+  # cgroup limits: derive it from the CPU quota to avoid OOM kills.
+  _jobs=$(nproc)
+  if [ -r /sys/fs/cgroup/cpu.max ]; then
+    read -r _quota _period </sys/fs/cgroup/cpu.max
+    if [ "${_quota}" != "max" ]; then
+      _jobs=$(((_quota + _period - 1) / _period))
+    fi
+  fi
+
+  _cross_args=()
+  if [ -n "${CROSS_COMPILE}" ]; then
+    # Debian multiarch: target headers in /usr/include, libs in
+    # /usr/lib/<triplet>. configure builds a native build-JDK on its own.
+    _cross_args=(
+      "--openjdk-target=${CROSS_COMPILE_HOST}"
+      "--x-includes=/usr/include"
+      "--x-libraries=/usr/lib/${CROSS_COMPILE_HOST}"
+      "--with-alsa-include=/usr/include"
+      "--with-alsa-lib=/usr/lib/${CROSS_COMPILE_HOST}"
+      "--with-cups-include=/usr/include"
+      "--with-fontconfig-include=/usr/include"
+    )
+    unset CC CXX CPP LD AR NM OBJCOPY STRIP
+  fi
+
+  cd "${srcdir}/jdk21u-jdk-${pkgver}-${_pkgrel}_adopt"
+  bash configure \
+    --with-conf-name=release \
+    --with-boot-jdk="${srcdir}/bootjdk" \
+    --with-jobs="${_jobs}" \
+    --with-version-pre= \
+    --with-version-opt=LTS \
+    --with-version-build="${_pkgrel}" \
+    --with-vendor-name="Zextras" \
+    --with-vendor-url="https://zextras.com/" \
+    --with-vendor-bug-url="https://github.com/zextras/carbonio-thirds-openjdk/issues" \
+    --with-vendor-vm-bug-url="https://github.com/zextras/carbonio-thirds-openjdk/issues" \
+    --with-native-debug-symbols=external \
+    --with-freetype=bundled \
+    --with-zlib=bundled \
+    --with-libjpeg=bundled \
+    --with-giflib=bundled \
+    --with-libpng=bundled \
+    --with-lcms=bundled \
+    --with-harfbuzz=bundled \
+    --enable-dtrace \
+    --disable-precompiled-headers \
+    --disable-warnings-as-errors \
+    --disable-ccache \
+    "${_cross_args[@]}"
+
+  make CONF=release images
+}
+
+package() {
   mkdir -p "${pkgdir}"/opt/zextras/common/bin
   mkdir -p "${pkgdir}"/opt/zextras/common/lib/jvm
-  cp -r "jdk-${pkgver}"* "${pkgdir}"/opt/zextras/common/lib/jvm/java
+  cp -a "${srcdir}/jdk21u-jdk-${pkgver}-${_pkgrel}_adopt/build/release/images/jdk" \
+    "${pkgdir}"/opt/zextras/common/lib/jvm/java
   cd "${pkgdir}"/opt/zextras/common/lib/jvm/java
   mv include/linux/* include
   rm -rf include/linux
@@ -54,4 +179,36 @@ package() {
   ln -s ../lib/jvm/java/bin/jstack .
   ln -s ../lib/jvm/java/bin/jstat .
   ln -s ../lib/jvm/java/bin/keytool .
+}
+
+# A cross-compiled JDK cannot run the target java at build time, so the
+# default CDS archives (shipped by Temurin) are missing on aarch64: generate
+# them on the target and track them with a marker so only those are removed.
+_cds_generate() {
+  _jvm=/opt/zextras/common/lib/jvm/java
+  if [ ! -f "${_jvm}/lib/server/classes.jsa" ]; then
+    "${_jvm}/bin/java" -Xshare:dump >/dev/null 2>&1 &&
+      "${_jvm}/bin/java" -XX:-UseCompressedOops -Xshare:dump \
+        -XX:SharedArchiveFile="${_jvm}/lib/server/classes_nocoops.jsa" >/dev/null 2>&1 &&
+      touch "${_jvm}/lib/server/.cds-generated"
+  fi
+  return 0
+}
+
+_cds_remove() {
+  _jvm=/opt/zextras/common/lib/jvm/java
+  if [ -f "${_jvm}/lib/server/.cds-generated" ]; then
+    rm -f "${_jvm}/lib/server/classes.jsa" \
+      "${_jvm}/lib/server/classes_nocoops.jsa" \
+      "${_jvm}/lib/server/.cds-generated"
+  fi
+  return 0
+}
+
+postinst() {
+  _cds_generate
+}
+
+prerm() {
+  _cds_remove
 }
