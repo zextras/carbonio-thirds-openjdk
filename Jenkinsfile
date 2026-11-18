@@ -19,7 +19,7 @@ pipeline {
     options {
         skipDefaultCheckout()
         buildDiscarder(logRotator(numToKeepStr: '5'))
-        timeout(time: 1, unit: 'HOURS')
+        timeout(time: 4, unit: 'HOURS')
     }
 
     stages {
@@ -54,11 +54,11 @@ pipeline {
             steps {
                 echo 'Building deb/rpm packages'
                 buildStage(
-                    buildFlags: ' -ds ',
+                    buildFlags: ' ',
                 )
                 buildStage(
                     architecture: 'aarch64',
-                    buildFlags: ' -ds --only carbonio-openjdk',
+                    buildFlags: ' --only carbonio-openjdk',
                     distros: ['ubuntu-jammy'],
                     parallelBuilds: false,
                 )
