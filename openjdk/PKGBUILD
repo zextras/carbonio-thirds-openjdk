@@ -97,6 +97,11 @@ build() {
   # extra flags must go through --with-extra-*.
   unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS
 
+  # configure refuses compilers that are ccache symlinks (yap puts the
+  # ccache wrapper dirs first in PATH).
+  PATH=$(printf '%s' "${PATH}" | tr ':' '\n' | grep -v '/ccache$' | paste -sd: -)
+  export PATH
+
   # configure sizes the job count from host cores/RAM, not the container's
   # cgroup limits: derive it from the CPU quota to avoid OOM kills.
   _jobs=$(nproc)
