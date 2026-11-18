@@ -98,7 +98,8 @@ build() {
   unset CFLAGS CXXFLAGS CPPFLAGS LDFLAGS
 
   # configure refuses compilers that are ccache symlinks (yap puts the
-  # ccache wrapper dirs first in PATH).
+  # ccache wrapper dirs first in PATH); --enable-ccache below invokes ccache
+  # itself, using the per-distro cache CI mounts at ~/.ccache.
   PATH=$(printf '%s' "${PATH}" | tr ':' '\n' | grep -v '/ccache$' | paste -sd: -)
   export PATH
 
@@ -151,7 +152,7 @@ build() {
     --enable-dtrace \
     --disable-precompiled-headers \
     --disable-warnings-as-errors \
-    --disable-ccache \
+    --enable-ccache \
     "${_cross_args[@]}"
 
   make CONF=release images
