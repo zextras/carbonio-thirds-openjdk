@@ -167,6 +167,9 @@ package() {
   rm -rf include/linux
   rm -rf lib/src.zip
   rm -rf legal
+  # Temurin ships native debug symbols in a separate debug image and no demos.
+  find . -name '*.debuginfo' -delete
+  rm -rf demo
   chmod 644 lib/ct.sym
 
   cd lib/security
