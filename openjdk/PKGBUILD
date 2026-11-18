@@ -88,7 +88,7 @@ build() {
     aarch64) _bootarch="aarch64" ;;
     *)
       echo "unsupported build host $(uname -m)" >&2
-      return 1
+      exit 1
       ;;
   esac
   rm -rf bootjdk
