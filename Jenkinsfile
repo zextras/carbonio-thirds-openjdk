@@ -54,11 +54,11 @@ pipeline {
             steps {
                 echo 'Building deb/rpm packages'
                 buildStage(
-                    buildFlags: ' -ds ',
+                    buildFlags: ' -s ',
                 )
                 buildStage(
                     architecture: 'aarch64',
-                    buildFlags: ' -ds --only carbonio-openjdk',
+                    buildFlags: ' -s --only carbonio-openjdk',
                     distros: ['ubuntu-jammy'],
                     parallelBuilds: false,
                 )
